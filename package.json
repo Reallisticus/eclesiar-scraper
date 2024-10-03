@@ -1,0 +1,17 @@
+{
+  "name": "eclesiar-scraper",
+  "version": "1.0.0",
+  "description": "Monorepo for Eclesiar Scraper Chrome Extension and Backend Server",
+  "scripts": {
+    "install:all": "npm run install:extension && npm run install:server",
+    "install:extension": "cd extension && npm install",
+    "install:server": "cd server && npm install",
+    "start:server": "cd server && npm start",
+    "build:extension": "cd extension && npm run build",
+    "test": "npm run test:extension && npm run test:server",
+    "test:extension": "cd extension && npm test",
+    "test:server": "cd server && npm test"
+  },
+  "author": "Your Name",
+  "license": "ISC"
+}

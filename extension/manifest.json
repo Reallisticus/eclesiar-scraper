@@ -1,0 +1,43 @@
+{
+  "name": "Eclesiar Company Checker",
+  "version": "0.0.1",
+  "manifest_version": 3,
+  "description": "Scan all businesses and extract workers into a list",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "tabs",
+    "scripting",
+    "alarms",
+    "webRequest"
+  ],
+  "host_permissions": [
+    "https://eclesiar.com/*",
+    "http://localhost:3005/*",
+    "ws://localhost:3005/"
+  ],
+  "background": {
+    "service_worker": "src/background/background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "icons": {
+    "16": "assets/icons/tangra16x16.png",
+    "32": "assets/icons/tangra32x32.png",
+    "64": "assets/icons/tangra64x64.png",
+    "128": "assets/icons/tangra128x128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://eclesiar.com/business/*"],
+      "js": [
+        "src/content/utils.js",
+        "src/content/businessScraper.js",
+        "src/content/regionScraper.js",
+        "src/content/content.js"
+      ]
+    }
+  ]
+}

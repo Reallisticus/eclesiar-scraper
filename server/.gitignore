@@ -1,0 +1,10 @@
+# Dependency directories
+node_modules/
+
+# Environment variables
+.env
+
+# But allow .env.local
+!.env.local
+
+# Rest of your .gitignore content...
