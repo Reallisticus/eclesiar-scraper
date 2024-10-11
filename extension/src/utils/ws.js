@@ -9,8 +9,8 @@ export function connectWebSocket(handleCommand) {
 
   socket.onmessage = (event) => {
     const message = JSON.parse(event.data);
-    console.log('Received message from server:', message);
-    handleCommand(message);
+    console.log('Received message from middleware:', message);
+    handleCommand(message); // Pass message to handleCommand function
   };
 
   socket.onclose = () => {

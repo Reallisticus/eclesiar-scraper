@@ -1,8 +1,19 @@
 export async function saveData(action, data) {
-  const endpoint =
-    action === 'saveBusinessData'
-      ? '/api/saveBusinessData'
-      : '/api/saveRegionData';
+  let endpoint;
+  switch (action) {
+    case 'saveBusinessData':
+      endpoint = '/api/saveBusinessData';
+      break;
+    case 'saveRegionData':
+      endpoint = '/api/saveRegionData';
+      break;
+    case 'saveBattleData':
+      endpoint = '/api/saveBattleData';
+      break;
+    default:
+      console.error('Unknown action:', action);
+      return { success: false, error: 'Unknown action' };
+  }
 
   try {
     const response = await fetch(`http://localhost:3005${endpoint}`, {
@@ -17,8 +28,8 @@ export async function saveData(action, data) {
       console.log('Data saved successfully.');
       return { success: true };
     } else {
-      console.error('Server error:', result.error);
-      return { success: false, error: result.error };
+      console.error('Server error:', result.message);
+      return { success: false, error: result.message };
     }
   } catch (error) {
     console.error('Network error:', error);

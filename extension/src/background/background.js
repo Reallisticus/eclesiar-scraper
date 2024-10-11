@@ -1,10 +1,11 @@
-import { connectWebSocket } from '../utils/websocket.js';
+import { connectWebSocket } from '../utils/ws.js';
 import { saveData } from '../services/api.js';
 import {
   handleCommand,
   navigateToNext,
   nextBusiness,
   nextRegion,
+  nextBattle,
   stopScrapingProcess,
 } from './scraping.js';
 
@@ -19,9 +20,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case 'nextRegion':
       nextRegion();
       break;
+    case 'nextBattle': // Add this
+      nextBattle();
+      break;
     case 'saveBusinessData':
     case 'saveRegionData':
-      saveData(message.action, message.data).then(sendResponse);
+    case 'saveBattleData': // Add this
+      saveData('saveBattleData', message.data).then((response) => {
+        console.log(
+          `Battle data sent to middleware: ${JSON.stringify(response)}`
+        );
+        sendResponse(response);
+      });
       return true; // Indicates that the response is asynchronous
     case 'stop':
       stopScrapingProcess();

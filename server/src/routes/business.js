@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const businessService = require('../services/businessService');
+const businessService = require('../services/businessSrv');
 
 router.post('/saveBusinessData', async (req, res, next) => {
   try {

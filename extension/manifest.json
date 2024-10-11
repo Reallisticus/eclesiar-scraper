@@ -17,11 +17,11 @@
     "ws://localhost:3005/"
   ],
   "background": {
-    "service_worker": "src/background/background.js",
+    "service_worker": "dist/background.bundle.js",
     "type": "module"
   },
   "action": {
-    "default_popup": "popup.html"
+    "default_popup": "src/popup/popup.html"
   },
   "icons": {
     "16": "assets/icons/tangra16x16.png",
@@ -31,13 +31,11 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://eclesiar.com/business/*"],
-      "js": [
-        "src/content/utils.js",
-        "src/content/businessScraper.js",
-        "src/content/regionScraper.js",
-        "src/content/content.js"
-      ]
+      "matches": [
+        "https://eclesiar.com/business/*",
+        "https://eclesiar.com/war/*"
+      ],
+      "js": ["dist/content.bundle.js"]
     }
   ]
 }

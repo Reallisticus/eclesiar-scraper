@@ -26,9 +26,35 @@ wss.on('connection', (ws) => {
   websocketService.setSocket(ws);
 
   ws.on('message', (message) => {
-    console.log('Received message from extension:', message);
-  });
+    try {
+      const decodedMessage = message.toString('utf8'); // Convert buffer to string
+      const parsedMessage = JSON.parse(decodedMessage); // Parse the string into JSON
 
+      console.log('Received message from extension:', parsedMessage);
+
+      // Handle the received message, for example:
+      if (
+        parsedMessage.action === 'startScraping' &&
+        parsedMessage.type === 'battle'
+      ) {
+        console.log(
+          `Scraping initiated for battle ID: ${parsedMessage.battleId}`
+        );
+        // Here you could pass battle data back to the client, log it, etc.
+        // This is the place to ensure that the scraping results get handled.
+      } else if (parsedMessage.action === 'saveBattleData') {
+        // Handle the message when the extension sends battle data to save
+        console.log(
+          `Received battle data from extension: ${JSON.stringify(
+            parsedMessage.data
+          )}`
+        );
+        // Save battle data to the database or process as needed
+      }
+    } catch (err) {
+      console.error('Error processing message:', err);
+    }
+  });
   ws.on('close', () => {
     console.log('Extension disconnected');
     websocketService.setSocket(null);

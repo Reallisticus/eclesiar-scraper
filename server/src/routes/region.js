@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const regionService = require('../services/regionService');
+const regionService = require('../services/regionSrv');
 
 router.post('/saveRegionData', async (req, res, next) => {
   try {
