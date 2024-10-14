@@ -8,10 +8,14 @@ const {
   InteractionType,
   ButtonBuilder,
   ButtonStyle,
+  EmbedBuilder,
 } = require('discord.js');
-const WebSocket = require('ws'); // Assuming you use WebSocket to communicate with your Node.js backend
+// const WebSocket = require('ws'); // Assuming you use WebSocket to communicate with your Node.js backend
 require('dotenv').config();
 const axios = require('axios');
+const { waitForScrapingToComplete } = require('./utils/dbOps');
+const getBattleSummary = require('./utils/getBattleSumm');
+const createBattleSummaryEmbed = require('./utils/createEmbed');
 
 const client = new Client({
   intents: [
@@ -22,19 +26,19 @@ const client = new Client({
   ],
 });
 
-const ws = new WebSocket('ws://localhost:3005'); // Your WebSocket endpoint
+// const ws = new WebSocket('ws://localhost:3005'); // Your WebSocket endpoint
 
-ws.on('open', () => {
-  console.log('Connected to WebSocket server.');
-});
+// ws.on('open', () => {
+//   console.log('Connected to WebSocket server.');
+// });
 
-ws.on('message', (message) => {
-  console.log('Received message from server:', message);
-});
+// ws.on('message', (message) => {
+//   console.log('Received message from server:', message);
+// });
 
-client.on('ready', () => {
-  console.log(`Logged in as ${client.user.tag}!`);
-});
+// client.on('ready', () => {
+//   console.log(`Logged in as ${client.user.tag}!`);
+// });
 
 const userInputs = new Map();
 
@@ -100,6 +104,9 @@ client.on('interactionCreate', async (interaction) => {
         });
         return;
       }
+
+      await interaction.deferReply({ ephemeral: false });
+
       try {
         // Send the battle ID to the Node.js backend via HTTP POST
         const response = await axios.post(
@@ -111,14 +118,41 @@ client.on('interactionCreate', async (interaction) => {
 
         // Check the response from the middleware
         if (response.data.success) {
-          await interaction.reply({
-            content: `Scraping initiated for battle ID: ${battleId}.`,
-            ephemeral: true,
-          });
+          if (response.data.needsScraping) {
+            console.log(
+              `Scraping initiated for battle ID: ${battleId}. Waiting for completion...`
+            );
+
+            await waitForScrapingToComplete(battleId, 120000, 5000);
+
+            // Retrieve the updated battle summary from the database
+            const battleSummary = await getBattleSummary(battleId);
+
+            // Send the battle summary as an embed
+            const embed = createBattleSummaryEmbed(battleId, battleSummary);
+
+            await interaction.editReply({
+              content: 'Battle summary (updated data):',
+              embeds: [embed],
+            });
+          } else {
+            console.log(
+              `Battle data already exists for battle ID: ${battleId}. Fetching from database...`
+            );
+
+            const battleSummary = await getBattleSummary(battleId);
+
+            // Send the battle summary as an embed
+            const embed = createBattleSummaryEmbed(battleId, battleSummary);
+
+            await interaction.editReply({
+              content: 'Battle summary (from cached data):',
+              embeds: [embed],
+            });
+          }
         } else {
-          await interaction.reply({
+          await interaction.editReply({
             content: `Failed to initiate scraping: ${response.data.message}`,
-            ephemeral: true,
           });
         }
       } catch (error) {
@@ -367,5 +401,6 @@ function calculateValues(inputs) {
   };
 }
 
+console.log(process.env.CLIENT_TOKEN);
 // Log In your bot
 client.login(process.env.CLIENT_TOKEN);

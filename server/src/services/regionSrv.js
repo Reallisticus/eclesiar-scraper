@@ -1,17 +1,19 @@
-const pool = require('../config/db');
+const RegionModel = require('../models/regionModel');
 
 async function saveRegionData(data) {
-  const query = `
-    INSERT INTO region_data (region_name, country_name, resource_type, pollution, url)
-    VALUES ($1, $2, $3, $4, $5)
-  `;
-  await pool.query(query, [
-    data.regionName || null,
-    data.countryName || null,
-    data.resourceType || null,
-    data.pollution || null,
-    data.url || null,
-  ]);
+  // Ensure the table exists
+  await RegionModel.createTable();
+
+  // Insert the region data into the table
+  const regionData = {
+    regionName: data.regionName || null,
+    countryName: data.countryName || null,
+    resourceType: data.resourceType || null,
+    pollution: data.pollution || null,
+    url: data.url || null,
+  };
+
+  await RegionModel.insert(regionData);
 }
 
 module.exports = {

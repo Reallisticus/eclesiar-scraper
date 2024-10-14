@@ -1,10 +1,13 @@
 // services/countryService.js
 const pool = require('../config/db');
-
+const CountryModel = require('../models/countryModel');
 const API_URL = 'https://api.eclesiar.com/countries';
 const API_TOKEN = process.env.API_TOKEN_ECLESIAR;
 
 async function populateCountries() {
+  // Ensure the table exists
+  await CountryModel.createTable();
+
   // Fetch data from the API
   const fetch = (await import('node-fetch')).default;
 
@@ -24,19 +27,13 @@ async function populateCountries() {
 
   // Loop through the country data and insert each country into the database
   for (const country of data) {
-    const query = `
-      INSERT INTO countries (id, name, flag)
-      VALUES ($1, $2, $3)
-      ON CONFLICT (id) DO NOTHING
-    `;
+    const countryData = {
+      id: country.id,
+      name: country.name,
+      flag: country.avatar, // Assuming 'avatar' is the flag URL or image
+    };
 
-    const values = [
-      country.id,
-      country.name,
-      country.avatar, // Assuming the avatar is a flag or image URL
-    ];
-
-    await pool.query(query, values);
+    await CountryModel.insert(countryData);
   }
 
   console.log('Countries have been successfully inserted into the database');

@@ -10,6 +10,9 @@ export async function saveData(action, data) {
     case 'saveBattleData':
       endpoint = '/api/saveBattleData';
       break;
+    case 'savePlayersData': // Add case for players
+      endpoint = '/api/saveBattlePlayers';
+      break;
     default:
       console.error('Unknown action:', action);
       return { success: false, error: 'Unknown action' };
@@ -23,10 +26,11 @@ export async function saveData(action, data) {
       },
       body: JSON.stringify(data),
     });
+
     const result = await response.json();
     if (result.success) {
-      console.log('Data saved successfully.');
-      return { success: true };
+      console.log(`${action} data saved successfully.`);
+      return result;
     } else {
       console.error('Server error:', result.message);
       return { success: false, error: result.message };

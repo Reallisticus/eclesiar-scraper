@@ -4,6 +4,7 @@ import { isPageValid } from './utils.js';
 import { scrapeBusinessData } from './businessScraper.js';
 import { scrapeRegionData } from './regionScraper.js';
 import { scrapeBattleData } from './battleScraper.js';
+import { scrapeBattlePlayers } from './battlePlayersScraper.js'; // Import the player scraping function
 
 if (!isPageValid()) {
   chrome.runtime.sendMessage({ action: 'stop' });
@@ -20,22 +21,24 @@ if (!isPageValid()) {
     action = 'saveRegionData';
     nextAction = 'nextRegion';
   } else if (url.includes('/war/')) {
-    data = scrapeBattleData();
-    action = 'saveBattleData';
-    nextAction = 'nextBattle';
+    data = scrapeBattleData(); // Should return an object with isBattleOver and totalRounds
+    const players = scrapeBattlePlayers();
+    data.players = players; // Attach players to the battle data
 
-    console.log(`Scraped battle data: ${JSON.stringify(data)}`);
+    console.log('Scraped battle data:', data);
+
+    action = 'saveBattleData';
   }
 
-  if (data) {
+  if (data && action) {
     data.url = url;
+    // Send the scraped data to the background script for saving
     chrome.runtime.sendMessage({ action, data }, (response) => {
       console.log('Data sent to background, response:', response);
     });
-    chrome.runtime.sendMessage({ action: nextAction });
+    // Trigger the next action (for navigation)
+    if (nextAction) {
+      chrome.runtime.sendMessage({ action: nextAction });
+    }
   }
 }
-
-chrome.runtime.sendMessage({ action, data }, (response) => {
-  console.log('Data sent to background, response:', response);
-});

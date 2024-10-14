@@ -6,7 +6,7 @@ let scrapingType = null;
 let battleId = 1; // Track the current battle ID
 
 export function handleCommand(command) {
-  console.log(`Received command: ${JSON.stringify(command)}`); // Add logging here
+  console.log(`Received command: ${JSON.stringify(command)}`); // Log entire command object
   if (command.action === 'startScraping') {
     scrapingType = command.type;
     console.log(`scrapingType set to: ${scrapingType}`);
