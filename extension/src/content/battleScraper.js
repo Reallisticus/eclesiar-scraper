@@ -13,6 +13,7 @@ export function scrapeBattleData() {
   );
 
   if (data.isBattleOver) {
+    console.log('test');
     // Scrape total number of rounds
     data.totalRounds = getElementCount(
       'body > div.wrapper > div > section > div > div > div.row.mt-2 > div.col-lg-9.col-md-12.col-12 > div > div > div > div.war-info.mt-1 > div > div > div.war-content-area__extra > div.w-100.d-flex.flex-wrap.justify-content-center.text-center.pt-2.pb-2',
@@ -50,6 +51,8 @@ export function scrapeBattleData() {
       data.winner = 'Unknown'; // If for some reason "Victory" is not found
     }
   } else {
+    console.log('test2');
+
     // Scrape current round number if battle is ongoing
     data.currentRound = getElementText(
       'body > div.wrapper > div > section > div > div > div.row.mt-2.usable-area > div.col-lg-9.col-md-12.col-12.expandable-main-area > div > div > div > div.war-info.mt-1 > div > div.war-content-area.forest > div.war-content-area__header.attacker-side > div.col-12.d-flex.flex-wrap.justify-content-center.mt-2.pb-3 > div.d-flex.timer-and-roundscore-area > div > div.war-content-area__header--time-area > span'

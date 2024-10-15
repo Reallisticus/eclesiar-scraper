@@ -1,4 +1,4 @@
-const { REST, Routes } = require('discord.js');
+const { REST, Routes, Client, GatewayIntentBits } = require('discord.js');
 require('dotenv').config();
 
 // Define the command
@@ -24,22 +24,37 @@ const commands = [
 // REST client to send the commands to Discord API
 const rest = new REST({ version: '10' }).setToken(process.env.CLIENT_TOKEN);
 
-// Deploy the command (choose between global and guild-specific)
-(async () => {
-  try {
-    console.log('Started refreshing application (/) commands.');
+// Create the bot client
+const client = new Client({
+  intents: [GatewayIntentBits.Guilds],
+});
 
-    // Guild-specific deployment (useful for testing in one server)
+client.once('ready', async () => {
+  console.log(`Logged in as ${client.user.tag}!`);
+
+  // Register commands for each guild the bot is currently in
+  for (const guild of client.guilds.cache.values()) {
+    await registerGuildCommands(guild.id);
+  }
+});
+
+client.on('guildCreate', async (guild) => {
+  // Register commands when the bot joins a new server
+  console.log(`Joined new guild: ${guild.name}`);
+  await registerGuildCommands(guild.id);
+});
+
+// Function to register commands for a guild
+async function registerGuildCommands(guildId) {
+  try {
     await rest.put(
-      Routes.applicationGuildCommands(
-        process.env.CLIENT_ID,
-        process.env.GUILD_ID
-      ),
+      Routes.applicationGuildCommands(process.env.CLIENT_ID, guildId),
       { body: commands }
     );
-
-    console.log('Successfully reloaded application (/) commands.');
+    console.log(`Successfully registered commands for guild ${guildId}`);
   } catch (error) {
-    console.error(error);
+    console.error(`Failed to register commands for guild ${guildId}:`, error);
   }
-})();
+}
+
+client.login(process.env.CLIENT_TOKEN);

@@ -26,26 +26,17 @@ const client = new Client({
   ],
 });
 
-// const ws = new WebSocket('ws://localhost:3005'); // Your WebSocket endpoint
-
-// ws.on('open', () => {
-//   console.log('Connected to WebSocket server.');
-// });
-
-// ws.on('message', (message) => {
-//   console.log('Received message from server:', message);
-// });
-
-// client.on('ready', () => {
-//   console.log(`Logged in as ${client.user.tag}!`);
-// });
-
 const userInputs = new Map();
 
 // Listen for interactions (commands)
 client.on('interactionCreate', async (interaction) => {
+  if (!interaction.isCommand()) return;
+  const { commandName } = interaction;
+
+  const YOUR_DISCORD_ID = '703548054199861258'; // Replace with your Discord user ID
+
   if (interaction.isCommand()) {
-    if (interaction.commandName === 'calculate') {
+    if (commandName === 'calculate') {
       // First modal (for first 5 inputs)
       const modal = new ModalBuilder()
         .setCustomId('calculateModalStep1')
@@ -93,7 +84,15 @@ client.on('interactionCreate', async (interaction) => {
       // Show the modal to the user
       await interaction.showModal(modal);
     }
-    if (interaction.commandName === 'scrapebattle') {
+    if (commandName === 'scrapebattle') {
+      if (interaction.user.id !== YOUR_DISCORD_ID) {
+        await interaction.reply({
+          content: 'You do not have permission to use this command.',
+          ephemeral: false, // Only the user can see this message
+        });
+        return;
+      }
+
       const battleId = interaction.options.getString('battle_id');
 
       // Validate the battle ID
