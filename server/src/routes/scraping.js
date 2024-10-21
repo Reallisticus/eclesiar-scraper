@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const websocketService = require('../services/wsSrv');
-const pool = require('../config/db'); // Adjust the path as necessary
 const BattleModel = require('../models/battleModel');
+const openUrlAndTriggerScraper = require('../utils/openURL');
 
 router.post('/triggerScraping', (req, res) => {
   const { action, type, startId } = req.body;
@@ -68,20 +68,5 @@ router.post('/scrapeBattle', async (req, res) => {
       .json({ success: false, message: 'Failed to open Edge' });
   }
 });
-
-async function openUrlAndTriggerScraper(url) {
-  // Import 'open' dynamically
-  const { default: open } = await import('open');
-  console.log('Imported open module successfully.');
-
-  // Open the URL in Edge
-  try {
-    await open(url, { app: { name: 'msedge' } });
-    console.log(`Opened Edge with URL: ${url}`);
-  } catch (err) {
-    console.error('Error opening Edge:', err);
-    throw new Error('Failed to open Edge');
-  }
-}
 
 module.exports = router;

@@ -3,7 +3,8 @@ const app = require('./src/app');
 const WebSocket = require('ws');
 const websocketService = require('./src/services/wsSrv');
 const pool = require('./src/config/db');
-
+const cron = require('node-cron');
+const axios = require('axios');
 const port = process.env.PORT || 3005;
 
 const server = app.listen(port, async () => {
@@ -66,3 +67,22 @@ server.on('upgrade', (request, socket, head) => {
     wss.emit('connection', ws, request);
   });
 });
+
+cron.schedule(
+  '58 23 * * *',
+  async () => {
+    console.log('Running daily damage fetch at 23:58 GMT');
+    try {
+      const response = await axios.post(
+        'http://localhost:3005/api/fetchDailyDamage'
+      );
+      console.log('Daily damage fetch result:', response.data);
+    } catch (error) {
+      console.error('Error in scheduled daily damage fetch:', error);
+    }
+  },
+  {
+    scheduled: true,
+    timezone: 'GMT',
+  }
+);

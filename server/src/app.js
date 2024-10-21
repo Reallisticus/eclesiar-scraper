@@ -8,6 +8,7 @@ const countryRoute = require('./routes/country'); // Don't forget to add this im
 const saveBattleData = require('./routes/saveBattleData');
 const battlePlayerRoute = require('./routes/saveBattlePlayers');
 const ongoingBattle = require('./routes/ongoingBattle');
+const dailyDamageRoute = require('./routes/dailyDamage'); // Add this line
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use('/api', countryRoute);
 app.use('/api', saveBattleData);
 app.use('/api', battlePlayerRoute);
 app.use('/api', ongoingBattle);
+app.use('/api', dailyDamageRoute); // Add this line
 
 app.use((req, res, next) => {
   res.status(404).json({ success: false, message: 'Endpoint not found' });

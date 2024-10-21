@@ -13,6 +13,9 @@ export async function saveData(action, data) {
     case 'savePlayersData': // Add case for players
       endpoint = '/api/saveBattlePlayers';
       break;
+    case 'saveDailyDamage':
+      endpoint = '/api/saveDailyDamage';
+      break;
     default:
       console.error('Unknown action:', action);
       return { success: false, error: 'Unknown action' };

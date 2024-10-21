@@ -4,7 +4,8 @@ import { isPageValid } from './utils.js';
 import { scrapeBusinessData } from './businessScraper.js';
 import { scrapeRegionData } from './regionScraper.js';
 import { scrapeBattleData } from './battleScraper.js';
-import { scrapeBattlePlayers } from './battlePlayersScraper.js'; // Import the player scraping function
+import { scrapeBattlePlayers } from './battlePlayersScraper.js';
+import { scrapeDailyDamage } from './dailyDmgScraper.js'; //
 
 if (!isPageValid()) {
   chrome.runtime.sendMessage({ action: 'stop' });
@@ -28,6 +29,9 @@ if (!isPageValid()) {
     console.log('Scraped battle data:', data);
 
     action = 'saveBattleData';
+  } else if (url.includes('/statistics/country/damage')) {
+    data = scrapeDailyDamage();
+    action = 'saveDailyDamage';
   }
 
   if (data && action) {

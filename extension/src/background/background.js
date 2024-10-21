@@ -66,7 +66,19 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         }
       });
       return true; // Indicates that the response is asynchronous
-
+    case 'saveDailyDamage':
+      console.log('Saving daily damage data:', message.data);
+      saveData('saveDailyDamage', message.data).then((response) => {
+        console.log(`Daily damage data response: ${JSON.stringify(response)}`);
+        if (response.success) {
+          console.log('Daily damage data saved successfully');
+          sendResponse({ success: true });
+        } else {
+          console.error('Failed to save daily damage data:', response.error);
+          sendResponse({ success: false, error: response.error });
+        }
+      });
+      return true; // Indicates that the response is asynchronous
     case 'stop':
       stopScrapingProcess();
       break;

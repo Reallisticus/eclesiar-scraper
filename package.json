@@ -13,5 +13,8 @@
     "test:server": "cd server && npm test"
   },
   "author": "Your Name",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "node-cron": "^3.0.3"
+  }
 }

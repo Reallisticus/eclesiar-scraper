@@ -19,6 +19,25 @@ const commands = [
       },
     ],
   },
+  {
+    name: 'dailydamage',
+    description: 'Display daily damage statistics',
+    options: [
+      {
+        name: 'country',
+        type: 3, // '3' represents string type
+        description: 'The country you want to see damage for (optional)',
+        required: false,
+      },
+      {
+        name: 'day',
+        type: 3, // '3' represents string type, can use a formatted date string
+        description:
+          'The specific day you want to see (optional, default is last day)',
+        required: false,
+      },
+    ],
+  },
 ];
 
 // REST client to send the commands to Discord API
