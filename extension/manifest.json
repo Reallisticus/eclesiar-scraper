@@ -33,7 +33,8 @@
     {
       "matches": [
         "https://eclesiar.com/business/*",
-        "https://eclesiar.com/war/*"
+        "https://eclesiar.com/war/*",
+        "https://eclesiar.com/statistics/country/damage"
       ],
       "js": ["dist/content.bundle.js"]
     }

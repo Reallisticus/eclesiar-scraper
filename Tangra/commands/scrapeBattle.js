@@ -1,7 +1,8 @@
 const axios = require('axios');
 const { waitForScrapingToComplete } = require('../utils/dbOps');
 const getBattleSummary = require('../utils/getBattleSumm');
-const createBattleSummaryEmbed = require('../utils/createEmbed');
+const createBattleSummaryEmbed =
+  require('../utils/createEmbed').createBattleSummaryEmbed;
 
 module.exports = {
   data: {
@@ -9,15 +10,6 @@ module.exports = {
     description: 'Scrape and display battle information',
   },
   async execute(interaction) {
-    // Check if the user has permission to use this command
-    // if (interaction.user.id !== yourDiscordId) {
-    //   await interaction.reply({
-    //     content: 'You do not have permission to use this command.',
-    //     ephemeral: true,
-    //   });
-    //   return;
-    // }
-
     const battleId = interaction.options.getString('battle_id');
 
     // Validate the battle ID

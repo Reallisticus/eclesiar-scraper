@@ -1,31 +1,59 @@
 // src/services/dailyDamageSrv.js
 const DailyDamageModel = require('../models/dailyDamageModel');
-const { openUrlAndTriggerScraper } = require('../utils/scraper');
+const openUrlAndTriggerScraper = require('../utils/openURL');
+const url = 'https://eclesiar.com/statistics/country/damage';
 
-async function fetchAndSaveDailyDamage() {
+async function fetchAndSaveDailyDamage(day = null, country = null) {
   try {
     // Ensure the daily_damage table exists
     await DailyDamageModel.createTable();
+    console.log(`Day: ${day}, Country: ${country}`);
+    let existingData;
 
-    const url = 'https://eclesiar.com/statistics/country/damage';
-
-    // Check if we already have data for today
-    const today = new Date().toISOString().split('T')[0];
-    const existingData = await DailyDamageModel.getDailyDamageByDate(today);
-
-    if (existingData.length > 0) {
-      console.log(
-        'Daily damage data already exists for today. No need to scrape.'
+    if (country && day) {
+      existingData = await DailyDamageModel.getDailyDamageByDayAndCountry(
+        day,
+        country
       );
-      return {
-        success: true,
-        message: 'Data already exists',
-        needsScraping: false,
-      };
+
+      console.log(existingData);
+
+      if (existingData.length > 0) {
+        const nextDayResult = await DailyDamageModel.getNextDayForCountry(
+          day,
+          country
+        );
+
+        // Calculate the daily damage
+        if (nextDayResult) {
+          console.log('Next day data:', nextDayResult);
+
+          const currentDamage = existingData[0].damage;
+          const nextDayDamage = nextDayResult.damage;
+          const dailyDamage = nextDayDamage - currentDamage;
+
+          // Return the result with the calculated daily damage
+          return {
+            success: true,
+            day,
+            country,
+            total_damage: currentDamage,
+            next_day_total_damage: nextDayDamage,
+            daily_damage: dailyDamage,
+          };
+        }
+      } else if (existingData.length === 0) {
+        // If no data exists for the specified day
+        console.log(`No data found for ${country} on Day ${day}.`);
+        return {
+          success: false,
+          message: `No data found for ${country} on Day ${day}.`,
+        };
+      }
     }
 
-    // If no data exists for today, trigger the scraper
     console.log('Proceeding to scrape daily damage data.');
+    const url = 'https://eclesiar.com/statistics/country/damage';
     await openUrlAndTriggerScraper(url);
 
     return {
@@ -45,7 +73,6 @@ async function saveDailyDamage(damageData) {
 
     for (const country of countries) {
       await DailyDamageModel.insertDailyDamage({
-        date: new Date().toISOString().split('T')[0], // Use today's date
         day,
         countryName: country.country,
         damage: country.damage,

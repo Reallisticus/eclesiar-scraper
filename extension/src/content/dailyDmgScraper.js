@@ -1,4 +1,5 @@
 export function scrapeDailyDamage() {
+  console.log('Scraping daily damage data...');
   const damageData = {
     day: '',
     countries: [],

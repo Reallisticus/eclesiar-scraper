@@ -7,8 +7,17 @@ const {
 } = require('../services/dailyDmgSrv');
 
 router.post('/fetchDailyDamage', async (req, res) => {
+  let { day, country } = req.body; // Extract day from request body
+  const parsedDay = day ? `Day ${day}` : null;
+  if (country) {
+    country = country.trim().toLowerCase(); // Convert country to lowercase
+  }
   try {
-    const result = await fetchAndSaveDailyDamage();
+    const result = await fetchAndSaveDailyDamage(parsedDay, country).catch(
+      (error) => {
+        console.log(error);
+      }
+    );
     return res.status(200).json(result);
   } catch (error) {
     console.error('Error in fetchDailyDamage route:', error);
@@ -22,6 +31,8 @@ router.post('/fetchDailyDamage', async (req, res) => {
 router.post('/saveDailyDamage', async (req, res) => {
   try {
     const damageData = req.body;
+
+    console.log('Received daily damage data:', damageData);
 
     if (!damageData || !damageData.day || !damageData.countries) {
       return res.status(400).json({

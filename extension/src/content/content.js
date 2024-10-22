@@ -30,6 +30,7 @@ if (!isPageValid()) {
 
     action = 'saveBattleData';
   } else if (url.includes('/statistics/country/damage')) {
+    console.log('test daily dmg');
     data = scrapeDailyDamage();
     action = 'saveDailyDamage';
   }
